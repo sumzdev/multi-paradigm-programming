@@ -1,6 +1,8 @@
-import { html, View, CustomEventWithDetail } from "rune-ts";
+import { html, View, CustomEventWithDetail } from 'rune-ts';
 
-type Toggle = { on: boolean; };
+interface Toggle {
+  on: boolean;
+}
 
 class Toggled extends CustomEventWithDetail<Toggle> {}
 
@@ -19,7 +21,7 @@ class SwitchView extends View<Toggle> {
 
   private toggle() {
     this.setOn(!this.data.on);
-    this.dispatchEvent(Toggled, {bubbles: true, detail: this.data});
+    this.dispatchEvent(Toggled, { bubbles: true, detail: this.data });
   }
 
   setOn(bool: boolean) {
@@ -28,10 +30,10 @@ class SwitchView extends View<Toggle> {
   }
 }
 
-type Setting = {
+interface Setting {
   title: string;
   on: boolean;
-};
+}
 
 class SettingItemView extends View<Setting> {
   switchView = new SwitchView(this.data);
@@ -47,20 +49,16 @@ class SettingItemView extends View<Setting> {
 }
 
 class SettingListView extends View<Setting[]> {
-  itemViews = this.data.map(setting => new SettingItemView(setting));
+  itemViews = this.data.map((setting) => new SettingItemView(setting));
 
   override template() {
-    return html`
-      <div>
-        ${this.itemViews}
-      </div>
-    `;
+    return html` <div>${this.itemViews}</div> `;
   }
 }
 
 class SettingPage extends View<Setting[]> {
   private listView = new SettingListView(this.data);
-  private toggleAllView = new SwitchView({on: this.isAllOn()});
+  private toggleAllView = new SwitchView({ on: this.isAllOn() });
 
   override template() {
     return html`
@@ -69,22 +67,20 @@ class SettingPage extends View<Setting[]> {
           <h2>Setting</h2>
           ${this.toggleAllView}
         </div>
-        <div class="body">
-          ${this.listView}
-        </div>
+        <div class="body">${this.listView}</div>
       </div>
     `;
   }
 
   protected override onRender() {
-    this.toggleAllView.addEventListener(Toggled, e => this.toggleAll(e.detail.on));
+    this.toggleAllView.addEventListener(Toggled, (e) => this.toggleAll(e.detail.on));
     this.listView.addEventListener(Toggled, () => this.syncToggleAllView());
   }
 
   toggleAll(on: boolean) {
     this.listView.itemViews
       .filter((itemView) => itemView.data.on !== on)
-      .forEach(itemView => itemView.switchView.setOn(on));
+      .forEach((itemView) => itemView.switchView.setOn(on));
   }
 
   syncToggleAllView() {
@@ -92,7 +88,7 @@ class SettingPage extends View<Setting[]> {
   }
 
   isAllOn() {
-    return this.listView.itemViews.every(itemView => itemView.data.on);
+    return this.listView.itemViews.every((itemView) => itemView.data.on);
   }
 }
 
@@ -103,7 +99,5 @@ export function main() {
     { title: 'Sound', on: false },
   ];
 
-  document.querySelector('#body')!.append(
-    new SettingPage(settings).render()
-  );
+  document.querySelector('#body')!.append(new SettingPage(settings).render());
 }
