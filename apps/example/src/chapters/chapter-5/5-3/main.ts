@@ -3,7 +3,7 @@ import { fx, map, range } from '@fxts/core';
 function delay<T>(time: number): Promise<undefined>;
 function delay<T>(time: number, value: T): Promise<T>;
 function delay<T>(time: number, value?: T): Promise<T | undefined> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(() => resolve(value), time);
   });
 }
@@ -18,16 +18,16 @@ const pgDataPaymentsPages: Payment[][] = [
   [
     { pg_uid: 'PG11', store_order_id: 1, amount: 15000 },
     { pg_uid: 'PG12', store_order_id: 2, amount: 25000 },
-    { pg_uid: 'PG13', store_order_id: 3, amount: 10000 }
+    { pg_uid: 'PG13', store_order_id: 3, amount: 10000 },
   ],
   [
     { pg_uid: 'PG14', store_order_id: 4, amount: 25000 },
     { pg_uid: 'PG15', store_order_id: 5, amount: 45000 },
-    { pg_uid: 'PG16', store_order_id: 6, amount: 15000 }
+    { pg_uid: 'PG16', store_order_id: 6, amount: 15000 },
   ],
   [
     { pg_uid: 'PG17', store_order_id: 7, amount: 20000 },
-    { pg_uid: 'PG18', store_order_id: 8, amount: 30000 }
+    { pg_uid: 'PG18', store_order_id: 8, amount: 30000 },
   ],
 ];
 
@@ -39,7 +39,7 @@ const PgApi = {
 
     const payments = pgDataPaymentsPages[page - 1] ?? [];
     console.log(
-      `${payments.length}: ${payments.map(p => p.pg_uid).join(', ') || '-'}`
+      `${payments.length}: ${payments.map(p => p.pg_uid).join(', ') || '-'}`,
     );
 
     return payments;
@@ -53,7 +53,7 @@ const PgApi = {
       message: `${pg_uid}: Cancellation and refund completed`,
       pg_uid,
     };
-  }
+  },
 };
 
 type Order = {
@@ -73,17 +73,15 @@ const StoreDB = {
       { id: 7, amount: 20000, is_paid: true },
       { id: 8, amount: 30000, is_paid: true },
     ];
-  }
+  },
 };
-
 
 async function code_5_32() {
   async function syncPayments() {
-    const payments =
-      fx(range(1, Infinity))
-        .map(page => [page, page, page])
-        .take(5)
-        .toArray();
+    const payments = fx(range(1, Infinity))
+      .map(page => [page, page, page])
+      .take(5)
+      .toArray();
 
     console.log(payments);
   }
@@ -93,12 +91,11 @@ async function code_5_32() {
 
 async function code_5_33() {
   async function syncPayments() {
-    const payments =
-      fx(range(1, Infinity))
-        .map(page => [page, page, page])
-        .take(5)
-        .flat()
-        .toArray();
+    const payments = fx(range(1, Infinity))
+      .map(page => [page, page, page])
+      .take(5)
+      .flat()
+      .toArray();
 
     console.log(payments);
   }
@@ -108,13 +105,12 @@ async function code_5_33() {
 
 async function code_5_34() {
   async function syncPayments() {
-    const payments = await
-      fx(range(1, Infinity))
-        .toAsync()
-        .map(page => PgApi.getPayments(page))
-        .take(5)
-        .flat()
-        .toArray();
+    const payments = await fx(range(1, Infinity))
+      .toAsync()
+      .map(page => PgApi.getPayments(page))
+      .take(5)
+      .flat()
+      .toArray();
 
     console.log(payments);
   }
@@ -124,13 +120,12 @@ async function code_5_34() {
 
 async function code_5_35() {
   async function syncPayments() {
-    const payments = await
-      fx(range(1, Infinity))
-        .toAsync()
-        .map(page => PgApi.getPayments(page))
-        .takeWhile(({length}) => length > 0)
-        .flat()
-        .toArray();
+    const payments = await fx(range(1, Infinity))
+      .toAsync()
+      .map(page => PgApi.getPayments(page))
+      .takeWhile(({ length }) => length > 0)
+      .flat()
+      .toArray();
 
     console.log(payments);
   }
@@ -140,13 +135,12 @@ async function code_5_35() {
 
 async function code_5_36() {
   async function syncPayments() {
-    const payments = await
-      fx(range(1, Infinity))
-        .toAsync()
-        .map(page => PgApi.getPayments(page))
-        .takeUntilInclusive(({length}) => length < 3)
-        .flat()
-        .toArray();
+    const payments = await fx(range(1, Infinity))
+      .toAsync()
+      .map(page => PgApi.getPayments(page))
+      .takeUntilInclusive(({ length }) => length < 3)
+      .flat()
+      .toArray();
 
     console.log(payments);
   }
@@ -156,18 +150,14 @@ async function code_5_36() {
 
 async function code_5_37() {
   async function syncPayments() {
-    const payments = await
-      fx(range(1, Infinity))
-        .toAsync()
-        .map(page => PgApi.getPayments(page))
-        .takeUntilInclusive(({length}) => length < 3)
-        .flat()
-        .toArray();
+    const payments = await fx(range(1, Infinity))
+      .toAsync()
+      .map(page => PgApi.getPayments(page))
+      .takeUntilInclusive(({ length }) => length < 3)
+      .flat()
+      .toArray();
 
-
-    const orders = await StoreDB.getOrders(
-      payments.map(p => p.store_order_id)
-    );
+    const orders = await StoreDB.getOrders(payments.map(p => p.store_order_id));
 
     await fx(payments)
       .toAsync()
@@ -183,20 +173,17 @@ async function code_5_37() {
 
 async function code_5_38_39() {
   async function syncPayments() {
-    const payments = await
-      fx(range(1, Infinity))
-        .toAsync()
-        .map(page => PgApi.getPayments(page))
-        .takeUntilInclusive(({length}) => length < 3)
-        .flat()
-        .toArray();
+    const payments = await fx(range(1, Infinity))
+      .toAsync()
+      .map(page => PgApi.getPayments(page))
+      .takeUntilInclusive(({ length }) => length < 3)
+      .flat()
+      .toArray();
 
-    const orders = await StoreDB.getOrders(
-      payments.map(p => p.store_order_id)
-    );
+    const orders = await StoreDB.getOrders(payments.map(p => p.store_order_id));
 
     const ordersById = Object.fromEntries(
-      map(order => [order.id, true], orders)
+      map(order => [order.id, true], orders),
     );
 
     await fx(payments)
@@ -228,22 +215,17 @@ async function code_5_38_39() {
 
 async function code_5_40() {
   async function syncPayments() {
-    const payments = await
-      fx(range(1, Infinity))
-        .toAsync()
-        .map(page => PgApi.getPayments(page))
-        .takeUntilInclusive(({length}) => length < 3)
-        .flat()
-        .toArray();
+    const payments = await fx(range(1, Infinity))
+      .toAsync()
+      .map(page => PgApi.getPayments(page))
+      .takeUntilInclusive(({ length }) => length < 3)
+      .flat()
+      .toArray();
 
-    const orders = await StoreDB.getOrders(
-      payments.map(p => p.store_order_id)
-    );
+    const orders = await StoreDB.getOrders(payments.map(p => p.store_order_id));
 
     // [5-39]
-    const ordersMapById = new Map(
-      map(order => [order.id, true], orders)
-    );
+    const ordersMapById = new Map(map(order => [order.id, true], orders));
 
     await fx(payments)
       .toAsync()
@@ -257,10 +239,7 @@ async function code_5_40() {
   async function runScheduler() {
     await fx(range(Infinity))
       .toAsync()
-      .forEach(() => Promise.all([
-        syncPayments(),
-        delay(10000)
-      ]));
+      .forEach(() => Promise.all([syncPayments(), delay(10000)]));
   }
 
   await runScheduler();
@@ -281,7 +260,7 @@ async function code_5_41__49() {
 
       const payments = pgDataPaymentsPages[page - 1] ?? [];
       console.log(
-        `${payments.length}개: ${payments.map(p => p.pg_uid).join(', ') || '-'}`
+        `${payments.length}개: ${payments.map(p => p.pg_uid).join(', ') || '-'}`,
       );
 
       return payments;
@@ -295,13 +274,15 @@ async function code_5_41__49() {
         message: `${pg_uid}: Cancellation and refund completed`,
         pg_uid,
       };
-    }
-  }
+    },
+  };
 
   const StoreDB = {
     async getOrders(ids: number[]): Promise<Order[]> {
       if (ids.length > 5) {
-        throw new Error(`Exceeded number of IDs: You can request up to 5 IDs. (Number provided: ${ids.length})`);
+        throw new Error(
+          `Exceeded number of IDs: You can request up to 5 IDs. (Number provided: ${ids.length})`,
+        );
       }
       console.log(`SELECT * FROM orders WHERE IN (${ids}) AND is_paid = true;`);
       await delay(100);
@@ -312,7 +293,7 @@ async function code_5_41__49() {
         { id: 7, amount: 20000, is_paid: true },
         { id: 8, amount: 30000, is_paid: true },
       ];
-    }
+    },
   };
 
   async function syncPayments() {
@@ -320,26 +301,22 @@ async function code_5_41__49() {
 
     const RATE_LIMIT = 2;
 
-    const payments = await
-      fx(range(1, totalPages + 1))
-        .toAsync()
-        .map(page => PgApi.getPayments(page))
-        .concurrent(RATE_LIMIT)
-        .flat()
-        .toArray();
+    const payments = await fx(range(1, totalPages + 1))
+      .toAsync()
+      .map(page => PgApi.getPayments(page))
+      .concurrent(RATE_LIMIT)
+      .flat()
+      .toArray();
 
-    const orders = await
-      fx(payments)
-        .map(p => p.store_order_id)
-        .chunk(5)
-        .toAsync()
-        .flatMap(StoreDB.getOrders)
-        .toArray();
+    const orders = await fx(payments)
+      .map(p => p.store_order_id)
+      .chunk(5)
+      .toAsync()
+      .flatMap(StoreDB.getOrders)
+      .toArray();
 
     // [5-39]
-    const ordersMapById = new Map(
-      map(order => [order.id, true], orders)
-    );
+    const ordersMapById = new Map(map(order => [order.id, true], orders));
 
     await fx(payments)
       .toAsync()
@@ -353,10 +330,7 @@ async function code_5_41__49() {
   async function runScheduler() {
     await fx(range(Infinity))
       .toAsync()
-      .forEach(() => Promise.all([
-        syncPayments(),
-        delay(10000)
-      ]));
+      .forEach(() => Promise.all([syncPayments(), delay(10000)]));
   }
 
   await runScheduler();
